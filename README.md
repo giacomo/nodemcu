@@ -1,2 +1,1 @@
-# nodemcu
-NoduMCU examples
+# ModeMCU using Lua and ArduinoIDE
