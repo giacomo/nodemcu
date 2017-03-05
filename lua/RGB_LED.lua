@@ -40,6 +40,14 @@ function setColor(r, g, b)
     pwm.setduty(2,blue);
 end
 
+function getColor()
+    local redled = 255 - math.ceil(pwm.getduty(1) / 4 / 1023 * 1020);
+    local greenled = 255 - math.ceil(pwm.getduty(3) / 4 / 1023 * 1020);
+    local blueled = 255 - math.ceil(pwm.getduty(2) / 4 / 1023 * 1020);
+
+    return string.format("%02x", redled)..string.format("%02x", greenled)..string.format("%02x", blueled)
+end
+
 function startServer()
     if srv then srv:close() end
     srv = net.createServer(net.TCP)
@@ -65,6 +73,8 @@ function startServer()
             rgbValue = rgbValue..string.format("%02x", _GET.blue)
 
             setColor(_GET.red, _GET.green, _GET.blue)
+        else
+            rgbValue = getColor()
         end
 
         -- if you're sending back HTML over HTTP you'll want something like this instead
@@ -83,10 +93,9 @@ function startServer()
         response[#response + 1] = "window.location = '?red=' + red + '&green=' + green + '&blue=' + blue;"
         response[#response + 1] = "}"
         response[#response + 1] = "<\/script>"
-        response[#response + 1] = "<\/head><body>"
+        response[#response + 1] = "<\/head><body style=\"text-align: center;\">"
+        response[#response + 1] = "<p><small>ColorPicker - WiFi PWM-Example<\/small><\/p>"
         response[#response + 1] = "<input class=\"jscolor {onFineChange:'update(this)'}\" value=\""..rgbValue.."\"\/>"
-        response[#response + 1] = "even more data"
-        response[#response + 1] = "e.g. content read from a file"
         response[#response + 1] = "<\/body><\/html>"
 
          -- sends and removes the first element from the 'response' table
